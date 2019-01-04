@@ -5,8 +5,6 @@ A scrapper for ygyl threads on /gif/ and /wsg/ on www.4chan.org .
 import basc_py4chan as basc
 import json as js
 
-target_boards_names = ['wsg'] # boards of interest
-
 YGYL = ["ygyl", "YGYL", "Ygyl" ]
 WEBM = ".webm"
 
@@ -28,19 +26,21 @@ def get_webms( target_board_name):
     for thread in target_threads:
         thread_files = thread.all_posts
         all_target_posts+=thread_files
-    print( all_target_posts[0] )
     posts_files = [ post.file for post in all_target_posts if post.has_file]
-    print( posts_files)
 
     files_dictionary = file_dict( posts_files )
-    print( files_dictionary )
-    print( files_dictionary.keys() )
 
     webms_location = open("webms.txt", "w")
     other_files_location = open("others.txt", "w")
-    for post_file in posts_files:
-        if post_file.file_extension == WEBM:
-            webms_location.write( post_file.file_url +"\n")
+    for post_file in files_dictionary[WEBM]:
+            webms_location.write( post_file +"\n")
+    webms_location.close()
+    webms = files_dictionary.pop(WEBM) # removes webms from file set
+    for file_ext in files_dictionary.keys():
+        other_files_location.write(file_ext+":\n")
+        for f in files_dictionary[file_ext]:
+            other_files_location.write("\t"+f+"\n")
+    other_files_location.close()
 
     # create dictionary of file extension, list of files with that extension pairs
 
