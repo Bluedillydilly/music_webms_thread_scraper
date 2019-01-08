@@ -19,6 +19,9 @@ def main():
     
     pass
 
+"""
+
+"""
 def get_webms( target_board_name):
     print( "Board of focus: "+target_board_name )
     all_threads = basc.Board(target_board_name).get_all_threads() 
@@ -45,15 +48,22 @@ def get_webms( target_board_name):
     if not nwf_name:
         nwf_name = "others.txt"
 
+    """
     webms_location = open( wf_name, "a" )
     other_files_location = open( nwf_name, "a" )
-    
+    """
+
+    write_links( wf_name, target_board_name, WEBM, files_url_dictionary )
+    """
     print( "Writing webm links to "+wf_name+"...")
     webms_location.write("/"+target_board_name+"/:\n")
     for post_file in files_url_dictionary[WEBM]:
             webms_location.write( "\t"+post_file +"\n")
     webms_location.close()
+    """
     
+    write_links( wf_name, target_board_name, "", files_url_dictionary )
+    """
     print("Writing non-webm links to "+nwf_name+"...")
     other_files_location.write("/"+target_board_name+"/:\n")
     for file_ext in files_url_dictionary.keys():
@@ -62,9 +72,39 @@ def get_webms( target_board_name):
             for f in files_url_dictionary[file_ext]:
                 other_files_location.write("\t\t"+f+"\n")
     other_files_location.close()
+    """
 
     to_download( target_board_name, files_object_dictionary)
 
+"""
+Writes files of extension type file_ext to a file named file_name.
+@param file_name the name of file to save file url to
+@param board_name the name of the current board where the files are located
+@param file_ext the file extension for the files of interest. "" for non-webms.
+@param file_urls a dictionary of file extensions to lists of files with that file type
+"""
+def write_links( file_name, board_name, file_ext, file_urls ):
+    FILE_MODE = "a"
+    url_file = open( file_name, FILE_MODE )
+
+    links_being_written = "webm" if file_ext == WEBM else "non-webm"
+    print("Writing non-webm links to "+file_name+"...")
+
+    url_file.write("/"+board_name+"/:\n")
+
+    f_u = {}
+    if file_ext == WEBM:
+        f_u = { WEBM: file_urls[WEBM]}
+    else:
+        f_u = file_urls
+        f_u.pop(WEBM)
+
+    for file_ext in f_u.keys():
+            url_file.write("\t"+file_ext+":\n")
+            for f in f_u[file_ext]:
+                url_file.write("\t\t"+f+"\n")
+    
+    url_file.close()
 
 """
 
@@ -104,7 +144,8 @@ def file_url_dict( file_set ):
     return f_d
 
 """
-
+Fucnction that checks for variations of 'ygyl' in a post. Checks in the post's subject and body.
+@return whether or not ygyl is contained in the post.
 """
 def search_for_ygyl( op_post ):
     subject = op_post.subject if op_post.subject else ""
