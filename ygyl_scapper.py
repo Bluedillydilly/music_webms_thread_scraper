@@ -20,7 +20,9 @@ def main():
     pass
 
 """
-
+Allows user to write links of files from a given board to a file.
+Allows user to download files of a given board.
+@param target_board_name the board of focus to look for ygyl threads.
 """
 def get_webms( target_board_name):
     print( "Board of focus: "+target_board_name )
@@ -38,57 +40,45 @@ def get_webms( target_board_name):
     files_object_dictionary = f_o_dict( files_from_posts )
     files_url_dictionary = file_url_dict( files_from_posts )
 
-    wf_name = str( input( 
-        "File to save webm links to. Press enter to save to webms.txt: " ))
-    if not wf_name:
-        wf_name = "webms.txt"
-    nwf_name = str( input(
-        "File to save non-webms to. Press enter to save to others.txt:"
-    ))
-    if not nwf_name:
-        nwf_name = "others.txt"
+    save_links( target_board_name, files_url_dictionary)
 
-    """
-    webms_location = open( wf_name, "a" )
-    other_files_location = open( nwf_name, "a" )
-    """
-
-    write_links( wf_name, target_board_name, WEBM, files_url_dictionary )
-    """
-    print( "Writing webm links to "+wf_name+"...")
-    webms_location.write("/"+target_board_name+"/:\n")
-    for post_file in files_url_dictionary[WEBM]:
-            webms_location.write( "\t"+post_file +"\n")
-    webms_location.close()
-    """
-    
-    write_links( wf_name, target_board_name, "", files_url_dictionary )
-    """
-    print("Writing non-webm links to "+nwf_name+"...")
-    other_files_location.write("/"+target_board_name+"/:\n")
-    for file_ext in files_url_dictionary.keys():
-        if file_ext != WEBM:
-            other_files_location.write("\t"+file_ext+":\n")
-            for f in files_url_dictionary[file_ext]:
-                other_files_location.write("\t\t"+f+"\n")
-    other_files_location.close()
-    """
-
+   
     to_download( target_board_name, files_object_dictionary)
 
 """
+User decides whether or not to save file urls from the given board.
+@param board_name name of board to save the files from.
+@param file_urls the set of file urls intended to writted to a file.
+"""
+def save_links( board_name, file_urls):
+    if not str( input( "Press enter to save webm links, enter anything else to not: " ) ):
+        wf_name = str( input( 
+            "File to save webm links to. Press enter to save to webms.txt: " ))
+        if not wf_name:
+            wf_name = "webms.txt"
+        write_links( wf_name, board_name, WEBM, file_urls )
+    if not str( input( "Press enter to save non-webm links, enter anything else to not: ") ):
+        nwf_name = str( input(
+            "File to save non-webms to. Press enter to save to others.txt:"
+        ))
+        if not nwf_name:
+            nwf_name = "others.txt"    
+        write_links( nwf_name, board_name, "", file_urls )
+
+
+"""
 Writes files of extension type file_ext to a file named file_name.
-@param file_name the name of file to save file url to
-@param board_name the name of the current board where the files are located
+@param file_name the name of file to save file url to.
+@param board_name the name of the current board where the files are located.
 @param file_ext the file extension for the files of interest. "" for non-webms.
-@param file_urls a dictionary of file extensions to lists of files with that file type
+@param file_urls a dictionary of file extensions to lists of files with that file type.
 """
 def write_links( file_name, board_name, file_ext, file_urls ):
     FILE_MODE = "a"
     url_file = open( file_name, FILE_MODE )
 
     links_being_written = "webm" if file_ext == WEBM else "non-webm"
-    print("Writing non-webm links to "+file_name+"...")
+    print("Writing "+links_being_written+" links to "+file_name+"...")
 
     url_file.write("/"+board_name+"/:\n")
 
@@ -144,7 +134,7 @@ def file_url_dict( file_set ):
     return f_d
 
 """
-Fucnction that checks for variations of 'ygyl' in a post. Checks in the post's subject and body.
+Function that checks for variations of 'ygyl' in a post. Checks in the post's subject and body.
 @return whether or not ygyl is contained in the post.
 """
 def search_for_ygyl( op_post ):
