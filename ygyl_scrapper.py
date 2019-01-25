@@ -3,18 +3,21 @@ A scrapper for ygyl threads on /gif/ and /wsg/ on www.4chan.org .
 """
 
 import basc_py4chan as basc
-from subprocess import call
 
-YGYL = ["ygyl", "YGYL", "Ygyl" ]
+from ygyl_helper import *
+
 WEBM = ".webm"
+BOARD_LIST = ["wsg", "gif"]
 
 def main():
     #boards_info()
-    input("Will look for webms in /gif/ and /wsg/. Press enter to continue.")
-    get_webms("wsg")
-    get_webms("gif")
+    i = "Will look for webms and other file formats in various 4chan boards.\nPress enter to continue, or H for more info. "
+    if str( input( i ) ) == "H":
+        more_info()
     
-
+    for board in BOARD_LIST:
+        if str(input("Search /"+board+"/ for files?(Y for yes) ")) == "Y":
+            search_board(board)
     
     pass
 
@@ -23,7 +26,7 @@ Allows user to write links of files from a given board to a file.
 Allows user to download files of a given board.
 @param target_board_name the board of focus to look for ygyl threads.
 """
-def get_webms( target_board_name):
+def search_board( target_board_name):
     print( "Board of focus: "+target_board_name )
     all_threads = basc.Board(target_board_name).get_all_threads() 
     target_threads = [ thread for thread in all_threads if search_for_ygyl( thread.topic ) ]
@@ -40,7 +43,6 @@ def get_webms( target_board_name):
     files_url_dictionary = file_url_dict( files_from_posts )
 
     save_links( target_board_name, files_url_dictionary)
-
    
     to_download( target_board_name, files_object_dictionary)
 
@@ -95,51 +97,7 @@ def write_links( file_name, board_name, file_ext, file_urls ):
     
     url_file.close()
 
-"""
-
-"""
-def to_download( board_name, files_from_posts ):
-    for ext in files_from_posts.keys():
-        to_d = str( input( "Press enter to download ALL "+ext+" files from "+board_name+". Enter anything else to not." ))
-        if not to_d:
-            for f in files_from_posts[ext]:
-                file_location = f.file_url
-                save_location = f.filename_original
-                call(["curl", file_location, "--output", save_location])
 
 
-"""
-
-"""
-def f_o_dict( file_set ):
-    fo_dict = {}
-    for f in file_set:
-        if f.file_extension not in fo_dict.keys(): # file ext not contained
-            fo_dict[f.file_extension] = [f]
-        else: # file ext contained in f_d
-            fo_dict[f.file_extension] += [f]
-    return fo_dict
-
-"""
-
-"""
-def file_url_dict( file_set ):
-    f_d = {}
-    for f in file_set:
-        if f.file_extension not in f_d.keys(): # file ext not contained
-            f_d[f.file_extension] = [f.file_url]
-        else: # file ext contained in f_d
-            f_d[f.file_extension] += [f.file_url]
-    return f_d
-
-"""
-Function that checks for variations of 'ygyl' in a post. Checks in the post's subject and body.
-@return whether or not ygyl is contained in the post.
-"""
-def search_for_ygyl( op_post ):
-    subject = op_post.subject if op_post.subject else ""
-    body_text = op_post.text_comment if op_post.text_comment else ""
-    op_text = subject+body_text
-    return any( ygyl_check in op_text for ygyl_check in YGYL)
 
 main()
