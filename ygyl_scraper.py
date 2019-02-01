@@ -6,10 +6,16 @@ import basc_py4chan as basc
 
 from ygyl_helper import *
 
+import json
+
 WEBM = ".webm"
 BOARD_LIST = ["wsg", "gif"]
 
+
 def main():
+    """
+
+    """
     #boards_info()
     i = "Will look for webms and other file formats in various 4chan boards.\nPress enter to continue, or H for more info. "
     if str( input( i ) ) == "H":
@@ -21,12 +27,13 @@ def main():
     
     pass
 
-"""
-Allows user to write links of files from a given board to a file.
-Allows user to download files of a given board.
-@param target_board_name the board of focus to look for ygyl threads.
-"""
+
 def search_board( target_board_name):
+    """
+    Allows user to write links of files from a given board to a file.
+    Allows user to download files of a given board.
+    @param target_board_name the board of focus to look for ygyl threads.
+    """
     print( "Board of focus: "+target_board_name )
     all_threads = basc.Board(target_board_name).get_all_threads() 
     target_threads = [ thread for thread in all_threads if search_for_ygyl( thread.topic ) ]
@@ -46,12 +53,13 @@ def search_board( target_board_name):
    
     to_download( target_board_name, files_object_dictionary)
 
-"""
-User decides whether or not to save file urls from the given board.
-@param board_name name of board to save the files from.
-@param file_urls the set of file urls intended to writted to a file.
-"""
+
 def save_links( board_name, file_urls):
+    """
+    User decides whether or not to save file urls from the given board.
+    @param board_name name of board to save the files from.
+    @param file_urls the set of file urls intended to writted to a file.
+    """
     if not str( input( "Press enter to save webm links, enter anything else to not: " ) ):
         wf_name = str( input( 
             "File to save webm links to. Press enter to save to webms.txt: " ))
@@ -67,35 +75,27 @@ def save_links( board_name, file_urls):
         write_links( nwf_name, board_name, "", file_urls )
 
 
-"""
-Writes files of extension type file_ext to a file named file_name.
-@param file_name the name of file to save file url to.
-@param board_name the name of the current board where the files are located.
-@param file_ext the file extension for the files of interest. "" for non-webms.
-@param file_urls a dictionary of file extensions to lists of files with that file type.
-"""
-def write_links( file_name, board_name, file_ext, file_urls ):
-    FILE_MODE = "a"
-    url_file = open( file_name, FILE_MODE )
 
+def write_links( file_name, board_name, file_ext, file_urls ):
+    """
+    Writes files of extension type file_ext to a file named file_name.
+    @param file_name the name of file to save file url to.
+    @param board_name the name of the current board where the files are located.
+    @param file_ext the file extension for the files of interest. "" for non-webms.
+    @param file_urls a dictionary of file extensions to lists of files with that file type.
+    """
     links_being_written = "webm" if file_ext == WEBM else "non-webm"
     print("Writing "+links_being_written+" links to "+file_name+"...")
 
-    url_file.write("/"+board_name+"/:\n")
-
-    f_u = {}
+    f_u = { board_name:"" }
     if file_ext == WEBM:
-        f_u = { WEBM: file_urls[WEBM]}
+        f_u[board_name] = { WEBM: file_urls[WEBM]}
     else:
         f_u = file_urls
         f_u.pop(WEBM)
 
-    for file_ext in f_u.keys():
-            url_file.write("\t"+file_ext+":\n")
-            for f in f_u[file_ext]:
-                url_file.write("\t\t"+f+"\n")
-    
-    url_file.close()
+    with open(file_name, "a") as output_file:
+        json.dump( f_u, output_file )
 
 
 
