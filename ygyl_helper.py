@@ -1,5 +1,5 @@
 """
-    File containing various helper functions for ygyl_scrapper.py
+    File containing various helper functions for ygyl_scraper.py
 """
 
 from subprocess import call

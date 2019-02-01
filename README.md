@@ -1,5 +1,5 @@
-# Music Webms Thread Scrapper
-A 4chan scapper, using basc-py4chan, that gathers webms from YGYL threads.
+# Music Webms Thread Scraper
+A 4chan scraper, using basc-py4chan, that gathers webms from YGYL threads.
 Follow commandline prompts once ran.
 NOTES:
 - YGYL threads are assumed to be threads that contain variants of "YGYL" in the body or subject of OP's post. 
