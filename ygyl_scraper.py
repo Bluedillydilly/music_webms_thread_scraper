@@ -1,31 +1,33 @@
 """
 A scraper for ygyl threads on /gif/ and /wsg/ on www.4chan.org .
 """
-
+#imports
 import basc_py4chan as basc
-
-from ygyl_helper import *
-
 import json
+from sys import argv
 
-WEBM = ".webm"
-BOARD_LIST = ["wsg", "gif"]
-
+# local imports
+from ygyl_helper import *
+from config import BOARD_LIST, FILE_EXTS
 
 def main():
     """
 
     """
+    options = argv[1:]
+
     #boards_info()
-    i = "Will look for webms and other file formats in various 4chan boards.\nPress enter to continue, or H for more info. "
-    if str( input( i ) ) == "H":
-        more_info()
+    print( "Will look for webms and other file formats in various 4chan boards. \
+        \nRun like `python3 ygyl_scraper.py H` to list help." )
+
+    # check what options used
+    if "H" in options:
+        more_info() 
     
     for board in BOARD_LIST:
         if str(input("Search /"+board+"/ for files?(Y for yes) ")) == "Y":
             search_board(board)
     
-    pass
 
 
 def search_board( target_board_name):
@@ -60,20 +62,13 @@ def save_links( board_name, file_urls):
     @param board_name name of board to save the files from.
     @param file_urls the set of file urls intended to writted to a file.
     """
-    if not str( input( "Press enter to save webm links, enter anything else to not: " ) ):
+    # check to write file urls to a file
+    if str( input( "Enter Y to save", FILE_EXTS, "links, enter anything else to not: " ) ) == "Y":
         wf_name = str( input( 
-            "File to save webm links to. Press enter to save to webms.txt: " ))
+            "File to save webm links to (press enter to save to webms.txt): " ))
         if not wf_name:
             wf_name = "webms.txt"
-        write_links( wf_name, board_name, WEBM, file_urls )
-    if not str( input( "Press enter to save non-webm links, enter anything else to not: ") ):
-        nwf_name = str( input(
-            "File to save non-webms to. Press enter to save to others.txt:"
-        ))
-        if not nwf_name:
-            nwf_name = "others.txt"    
-        write_links( nwf_name, board_name, "", file_urls )
-
+        write_links( wf_name, board_name, FILE_EXTS, file_urls )
 
 
 def write_links( file_name, board_name, file_ext, file_urls ):
@@ -84,15 +79,15 @@ def write_links( file_name, board_name, file_ext, file_urls ):
     @param file_ext the file extension for the files of interest. "" for non-webms.
     @param file_urls a dictionary of file extensions to lists of files with that file type.
     """
-    links_being_written = "webm" if file_ext == WEBM else "non-webm"
+    links_being_written = "webm" if file_ext == FILE_EXTS else "non-webm"
     print("Writing "+links_being_written+" links to "+file_name+"...")
 
     f_u = { board_name:"" }
-    if file_ext == WEBM:
-        f_u[board_name] = { WEBM: file_urls[WEBM]}
+    if file_ext == FILE_EXTS:
+        f_u[board_name] = { FILE_EXTS: file_urls[FILE_EXTS]}
     else:
         f_u = file_urls
-        f_u.pop(WEBM)
+        f_u.pop(FILE_EXTS)
 
     with open(file_name, "a") as output_file:
         json.dump( f_u, output_file )

@@ -3,9 +3,7 @@
 """
 
 import urllib.request
-
-YGYL = ["ygyl", "YGYL", "Ygyl" ]
-
+from config import YGYL
 
 
 def more_info():
@@ -13,7 +11,7 @@ def more_info():
     Prints more info about the program.
     Prints info about configuration customization.
     """
-    lines = "------------------------------------------"
+    lines = "-"*75
     print(lines+"\nAdditional Information\n"+lines)
     print("Configuration:")
     print("\tEdit WEBM global variable to change target file type.")
@@ -73,5 +71,11 @@ def to_download( board_name, files_from_posts ):
         if not to_d:
             for f in files_from_posts[ext]:
                 file_location = f.file_url
-                save_location = f.filename_original
+                save_location = valid_file_name( f.filename_original )
                 urllib.request.urlretrieve( file_location, save_location )
+
+
+def valid_file_name( file_name ):
+    bad_symbols = "?|\\/:*?\"<>|"
+    file_name = ''.join( file_name.split( bad_symbols ) )
+    return file_name
